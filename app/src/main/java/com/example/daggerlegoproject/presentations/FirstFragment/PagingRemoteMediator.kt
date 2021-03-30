@@ -75,6 +75,7 @@ class PagingRemoteMediator @Inject constructor(
                         legoId = it.id, prevKey = prevKey, nextKey = nextKey
                     )
                 }
+
                 appDatabase.remoteDao().insertKeys(keys)
                 appDatabase.roomDao().insertAll(repos)
             }

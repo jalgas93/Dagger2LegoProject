@@ -18,16 +18,17 @@ class Repos @Inject constructor(
 ) {
 
     // suspend fun repo(token:String,page:Int,query:String) = retrofitService.getSets(token, page,query)
+    @OptIn(ExperimentalPagingApi::class)
     fun getSearchResult(query: String): Flow<PagingData<Result>> {
 
 
         val dbQuery = "%${query.replace(' ', '%')}%"
         val pagingSourceFactory = {
-            TODO()
-            // appDatabase.roomDao().findByName(dbQuery)
+
+             appDatabase.roomDao().findByName(dbQuery)
             }
 
-            @OptIn(ExperimentalPagingApi::class)
+
             return Pager(
                 config = PagingConfig(pageSize = NETWORK_PAGING_SIZE, enablePlaceholders = false),
                 remoteMediator = PagingRemoteMediator(query, retrofitService, appDatabase),
