@@ -1,14 +1,18 @@
-package com.example.daggerlegoproject.cache
+package com.example.daggerlegoproject.data.room
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.daggerlegoproject.domain.modelRetrofit.Result
+import com.example.daggerlegoproject.domain.remoteKeys.RemoteKeys
+import com.example.daggerlegoproject.domain.remoteKeys.RemoteKeysDao
 
-@Database(entities = [RoomModel::class], version = 1)
+@Database(entities = [Result::class,RemoteKeys::class], version = 1,exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun roomDao(): RoomDao
+    abstract fun remoteDao():RemoteKeysDao
 
     companion object {
 

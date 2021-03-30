@@ -1,4 +1,4 @@
-package com.example.daggerlegoproject.data.RetrofitModel
+package com.example.daggerlegoproject.domain.modelRetrofit
 
 
 import com.google.gson.annotations.SerializedName
