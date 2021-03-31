@@ -14,29 +14,20 @@ import javax.inject.Inject
 class Repos @Inject constructor(
     var retrofitService: RetrofitService,
     var appDatabase: AppDatabase
-
 ) {
 
-    // suspend fun repo(token:String,page:Int,query:String) = retrofitService.getSets(token, page,query)
     @OptIn(ExperimentalPagingApi::class)
-    fun getSearchResult(query: String): Flow<PagingData<Result>> {
-
-
+    fun getSearchResult(query: String,token:String): Flow<PagingData<Result>> {
         val dbQuery = "%${query.replace(' ', '%')}%"
         val pagingSourceFactory = {
-
-             appDatabase.roomDao().findByName(dbQuery)
-            }
-
-
-            return Pager(
-                config = PagingConfig(pageSize = NETWORK_PAGING_SIZE, enablePlaceholders = false),
-                remoteMediator = PagingRemoteMediator(query, retrofitService, appDatabase),
-                pagingSourceFactory = pagingSourceFactory
-            ).flow
+            appDatabase.roomDao().findByName(dbQuery)
         }
-
-
+        return Pager(
+            config = PagingConfig(pageSize = NETWORK_PAGING_SIZE, enablePlaceholders = false),
+            remoteMediator = PagingRemoteMediator(query, retrofitService, appDatabase,token),
+            pagingSourceFactory = pagingSourceFactory
+        ).flow
+    }
 
     companion object {
         private const val NETWORK_PAGING_SIZE = 50

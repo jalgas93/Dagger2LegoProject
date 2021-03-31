@@ -3,6 +3,8 @@ package com.example.daggerlegoproject.di
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.example.daggerlegoproject.App
 import com.example.daggerlegoproject.data.repositories.Repos
 import com.example.daggerlegoproject.data.room.AppDatabase
 import com.example.daggerlegoproject.presentations.FirstFragment.PagingRemoteMediator
@@ -25,9 +27,18 @@ import javax.inject.Singleton
 class AppModule {
 
     //Database
-    @Singleton
-    @Provides
-    fun provideDb(app: Application) = AppDatabase.getInstance(app)
+//    @Singleton
+//    @Provides
+//    fun provideDb(app: Application) = AppDatabase.getInstance(app)
+
+@Singleton
+@Provides
+fun providesRoomDatabase(app: Application): AppDatabase {
+    return Room.databaseBuilder(app, AppDatabase::class.java, "jalgas")
+        .fallbackToDestructiveMigration()
+        .allowMainThreadQueries()
+        .build()
+}
 
     @Singleton
     @Provides
@@ -58,8 +69,8 @@ class AppModule {
     //Paging 3.0
     @Singleton
     @Provides
-    fun provideRemoteMediator(query:String,retrofitService: RetrofitService,appDatabase: AppDatabase)
-            = PagingRemoteMediator(query, retrofitService, appDatabase)
+    fun provideRemoteMediator(query:String,retrofitService: RetrofitService,appDatabase: AppDatabase,token:String)
+            = PagingRemoteMediator(query, retrofitService, appDatabase,token)
 
     //Retrofit
     @Singleton

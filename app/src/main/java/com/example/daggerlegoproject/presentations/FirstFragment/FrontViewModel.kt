@@ -18,16 +18,6 @@ class FrontViewModel @Inject constructor(
     var repos: Repos,
     private @Named("auth_token") var token: String
 ) : ViewModel() {
-
-//    private val data: MutableLiveData<RetrofitModel> = MutableLiveData()
-//    val liveData: LiveData<RetrofitModel> = data
-
-//     fun legoSet(page: Int,query:String) {
-//        viewModelScope.launch {
-//           data.value =  repos.repo(token, page,query)
-//        }
-//    }
-
     private var currentQueryValue: String? = null
     private var currentSearchResult: Flow<PagingData<Result>>? = null
 
@@ -37,11 +27,9 @@ class FrontViewModel @Inject constructor(
             return lastResult
         }
         currentQueryValue = queryString
-        val newResult:Flow<PagingData<Result>> = repos.getSearchResult(queryString)
+        val newResult:Flow<PagingData<Result>> = repos.getSearchResult(queryString,token)
             .cachedIn(viewModelScope)
         currentSearchResult = newResult
         return newResult
-
     }
-
 }
