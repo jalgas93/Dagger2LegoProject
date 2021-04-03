@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.daggerlegoproject.databinding.FragmentFrontBinding
@@ -111,6 +112,19 @@ class FrontFragment : Fragment(), Injectable {
                 pagingAdapter.submitData(it)
             }
         }
+
+        pagingAdapter.setItemClick {
+            var a = it.imageUrl
+            var w = it.lastModifiedDate
+            var e = it.name
+            var r=it.numParts
+            var t = it.themeId
+            var y = it.url
+            var u= it.year
+
+            var action = FrontFragmentDirections.actionFrontFragmentToDetailFragment(it)
+            view?.let { it1 -> Navigation.findNavController(it1).navigate(action) }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -118,7 +132,7 @@ class FrontFragment : Fragment(), Injectable {
                footer =PagingLoadStateAdapter{pagingAdapter.retry()}
            )
           pagingAdapter.addLoadStateListener {
-            mBinding.rvMainFragment.isVisible = it.source?.refresh is LoadState.NotLoading
+            mBinding.rvMainFragment.isVisible = it.source.refresh is LoadState.NotLoading
             mBinding.progressBar.isVisible = it.source.refresh is LoadState.Loading
             mBinding.retryButton.isVisible = it.source.refresh is LoadState.Error
 

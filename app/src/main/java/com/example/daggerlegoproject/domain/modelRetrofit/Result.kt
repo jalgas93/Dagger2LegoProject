@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
+
 @Entity(tableName = "LegoDatabase")
 data class Result(
     @PrimaryKey
@@ -24,4 +26,4 @@ data class Result(
     val url: String? = null,
     @field:SerializedName("year")
     val year: Int? = null
-)
+):Serializable

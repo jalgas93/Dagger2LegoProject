@@ -9,5 +9,20 @@
         android:id="@+id/frontFragment"
         android:name="com.example.daggerlegoproject.presentations.FirstFragment.FrontFragment"
         android:label="fragment_front"
-        tools:layout="@layout/fragment_front" />
+        tools:layout="@layout/fragment_front" >
+        <action
+            android:id="@+id/action_frontFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.daggerlegoproject.presentations.secontFragment.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail" >
+        <argument
+            android:name="modelResult"
+            app:argType="com.example.daggerlegoproject.domain.modelRetrofit.Result"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 </navigation>

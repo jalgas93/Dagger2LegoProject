@@ -78,15 +78,21 @@ class PagingRemoteMediator @Inject constructor(
         }
     }
 
+
+
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, Result>): RemoteKeys? {
         // Get the last page that was retrieved, that contained items.
         // From that last page, get the last item
-        return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
+        return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { repo ->
                 // Get the remote keys of the last item retrieved
                 appDatabase.remoteDao().findId(repo.id)
             }
     }
+
+
+
+
 
     private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Result>): RemoteKeys? {
         // Get the first page that was retrieved, that contained items.
