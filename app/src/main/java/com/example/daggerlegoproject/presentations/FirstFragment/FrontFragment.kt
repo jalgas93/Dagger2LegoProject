@@ -18,6 +18,8 @@ import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.daggerlegoproject.databinding.FragmentFrontBinding
 import com.example.daggerlegoproject.di.Injectable
+import com.example.daggerlegoproject.retrofit.IN_QUALIFIER
+import com.example.daggerlegoproject.retrofit.RetrofitService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -46,11 +48,11 @@ class FrontFragment : Fragment(), Injectable {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView()
         val query = savedInstanceState?.getString(LAST_SEARCH_QUERY) ?: DEFUALT_QUERY
-        init(query)
-        search(query)
-        mBinding.retryButton.setOnClickListener { pagingAdapter.retry() }
+        Search(query)
+        setupRecyclerView()
+        initSearch(query)
+         //mBinding.retryButton.setOnClickListener { pagingAdapter.retry() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -58,10 +60,10 @@ class FrontFragment : Fragment(), Injectable {
         outState.putString(LAST_SEARCH_QUERY, mBinding.etSearch.text?.trim().toString())
     }
 
-    private fun search(query: String) {
+    private fun initSearch(query: String) {
         mBinding.etSearch.setText(query)
         mBinding.etSearch.setOnEditorActionListener { textView, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_GO) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 updateRepoListFromInput()
                 true
             } else {
@@ -94,22 +96,28 @@ class FrontFragment : Fragment(), Injectable {
     private fun updateRepoListFromInput() {
         mBinding.etSearch.text!!.trim().let {
             if (it.isNotEmpty()) {
-                init(it.toString())
+                mBinding.rvMainFragment.scrollToPosition(0)
+                Search(it.toString())
+            } else {
+
+                Search("")
             }
         }
     }
 
-    private fun init(query: String) {
+
+    private fun Search(query: String) {
         mBinding.rvMainFragment.apply {
-            this.adapter = adapter
+            this.adapter = pagingAdapter
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
             frontViewModel.searchRepo(query).collectLatest {
-                Log.i("jalgas1", it.toString())
                 pagingAdapter.submitData(it)
+
+
             }
         }
 
@@ -117,10 +125,10 @@ class FrontFragment : Fragment(), Injectable {
             var a = it.imageUrl
             var w = it.lastModifiedDate
             var e = it.name
-            var r=it.numParts
+            var r = it.numParts
             var t = it.themeId
             var y = it.url
-            var u= it.year
+            var u = it.year
 
             var action = FrontFragmentDirections.actionFrontFragmentToDetailFragment(it)
             view?.let { it1 -> Navigation.findNavController(it1).navigate(action) }
@@ -128,26 +136,26 @@ class FrontFragment : Fragment(), Injectable {
     }
 
     private fun setupRecyclerView() {
-           mBinding.rvMainFragment.adapter = pagingAdapter.withLoadStateFooter(
-               footer =PagingLoadStateAdapter{pagingAdapter.retry()}
-           )
-          pagingAdapter.addLoadStateListener {
-            mBinding.rvMainFragment.isVisible = it.source.refresh is LoadState.NotLoading
-            mBinding.progressBar.isVisible = it.source.refresh is LoadState.Loading
-            mBinding.retryButton.isVisible = it.source.refresh is LoadState.Error
 
-            val errorState = it.source.append as? LoadState.Error
-                ?: it.source.prepend as? LoadState.Error
-                ?: it.append as? LoadState.Error
-                ?: it.prepend as? LoadState.Error
-            errorState?.let {
-                Toast.makeText(requireContext(), "jalgas", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        pagingAdapter.addLoadStateListener {
+//            mBinding.rvMainFragment.isVisible = it.source.refresh is LoadState.NotLoading
+//            mBinding.progressBar.isVisible = it.source.refresh is LoadState.Loading
+//            mBinding.retryButton.isVisible = it.source.refresh is LoadState.Error
+//
+//
+//            val errorState = it.source.append as? LoadState.Error
+//                ?: it.source.prepend as? LoadState.Error
+//                ?: it.append as? LoadState.Error
+//                ?: it.prepend as? LoadState.Error
+//            errorState?.let {
+//                Toast.makeText(requireContext(),"LoadState", Toast.LENGTH_SHORT).show()
+//            }
+//
+//        }
     }
 
     companion object {
         private const val LAST_SEARCH_QUERY: String = "last_search_query"
-        private const val DEFUALT_QUERY = ""
+        private const val DEFUALT_QUERY = " "
     }
 }

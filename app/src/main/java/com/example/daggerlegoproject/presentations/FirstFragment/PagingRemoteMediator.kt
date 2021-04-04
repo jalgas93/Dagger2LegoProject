@@ -1,6 +1,5 @@
 package com.example.daggerlegoproject.presentations.FirstFragment
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -9,6 +8,7 @@ import androidx.room.withTransaction
 import com.example.daggerlegoproject.data.room.AppDatabase
 import com.example.daggerlegoproject.domain.modelRetrofit.Result
 import com.example.daggerlegoproject.domain.remoteKeys.RemoteKeys
+import com.example.daggerlegoproject.retrofit.IN_QUALIFIER
 import com.example.daggerlegoproject.retrofit.RetrofitService
 import java.io.InvalidObjectException
 import javax.inject.Inject
@@ -49,19 +49,19 @@ class PagingRemoteMediator @Inject constructor(
                 remoteKeys.nextKey
             }
         }
-        val apiQuery = query
+        val apiQuery = query+IN_QUALIFIER
 
         try {
             val responce = service.getSets(token, page, apiQuery)
             val repos = responce.results
-            val endPosition = repos!!.isEmpty()
+            val endOfPaginationReached = repos!!.isEmpty()
             appDatabase.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     appDatabase.remoteDao().clearRemoteKeys()
                     appDatabase.roomDao().clearLegoDatabase()
                 }
                 val prevKey = if (page == STARTING_PAGE_INDEX) null else page - 1
-                val nextKey = if (endPosition) null else page + 1
+                val nextKey = if (endOfPaginationReached) null else page + 1
                 val keys = repos.map {
                     RemoteKeys(
                         legoId = it.id, prevKey = prevKey, nextKey = nextKey
@@ -70,7 +70,7 @@ class PagingRemoteMediator @Inject constructor(
                 appDatabase.remoteDao().insertKeys(keys)
                 appDatabase.roomDao().insertAll(repos)
             }
-            return MediatorResult.Success(endOfPaginationReached = endPosition)
+            return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (e: Exception) {
             return MediatorResult.Error(e)
         } catch (e: Exception) {
