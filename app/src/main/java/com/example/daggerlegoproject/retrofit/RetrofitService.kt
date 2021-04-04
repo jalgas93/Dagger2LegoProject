@@ -4,7 +4,7 @@ import com.example.daggerlegoproject.domain.modelRetrofit.RetrofitModel
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
-
+const val IN_QUALIFIER = "in:name"
 interface RetrofitService {
     companion object {
         const val ENDPOINT = "https://rebrickable.com/api/v3/lego/"

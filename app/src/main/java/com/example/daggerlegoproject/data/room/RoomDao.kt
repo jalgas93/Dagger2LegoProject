@@ -16,8 +16,7 @@ interface RoomDao {
     suspend fun insertAll(retrofitModel: List<Result>)
     @Query(
         "SELECT * FROM LegoDatabase WHERE " +
-                "name LIKE:queryString"
-    )
+                "name LIKE:queryString")
     fun findByName(queryString: String): PagingSource<Int, Result>
 
     @Query("DELETE FROM LegoDatabase")
